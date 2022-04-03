@@ -33,6 +33,8 @@ def files(request):
         doc_list = get_files(request.args)
         return f'{doc_list}'
 
+    return 'Invalid Method'
+
 
 def add_file(link, name):
     fdb = firestore.Client().from_service_account_json(
