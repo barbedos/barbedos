@@ -1,11 +1,14 @@
 from datetime import datetime
+import json
 import functions_framework
 from firebase_admin import firestore
 
 
-JSON_KEY_PATH = (
-    '/Users/barbe/Projects/barbedos/functions/files/'
-    'key.serverless-admin.json')
+# JSON_KEY_PATH = (
+#      '/Users/barbe/Projects/barbedos/key.serverless-admin.json')
+# FDB = firestore.Client().from_service_account_json(
+#      JSON_KEY_PATH)
+FDB = firestore.Client()
 
 
 @functions_framework.http
@@ -37,11 +40,8 @@ def files(request):
 
 
 def add_file(link, name):
-    fdb = firestore.Client().from_service_account_json(
-        JSON_KEY_PATH)
-
     now = datetime.utcnow()
-    doc_ref = fdb.collection('files').document()
+    doc_ref = FDB.collection('files').document()
     doc_ref.set({
         'link': link,
         'name': name,
@@ -52,18 +52,13 @@ def add_file(link, name):
 
 
 def get_files(args):
-    fdb = firestore.Client().from_service_account_json(
-        JSON_KEY_PATH)
-
     status = args.get('status', 'pending')
-    docs = fdb.collection('files').where(
+    docs = FDB.collection('files').where(
         'status', '==', status).stream()
 
     doc_list = []
     for doc in docs:
-        print(f'{doc.id} -> {doc.to_dict}')
-        doc_list.append({
-            'id': doc.id,
-            'doc': doc.to_dict()
-        })
-    return doc_list
+        doc_d = doc.to_dict()
+        doc_d['id'] = doc.id
+        doc_list.append(doc_d)
+    return json.dumps(doc_list, sort_keys=True, default=str)
