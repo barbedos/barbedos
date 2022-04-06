@@ -36,6 +36,15 @@ def files(request):
         doc_list = get_files(request.args)
         return f'{doc_list}'
 
+    if request.method == 'PUT':
+        request_json = json.loads(request.data)
+        if not request_json:
+            return 'failed to get request data'
+        id_ = request_json.get('id')
+        data = request_json.get('data')
+        update_file(id_, data)
+        return 'Success'
+
     return 'Invalid Method'
 
 
@@ -49,6 +58,11 @@ def add_file(link, name):
         'time_added': now,
         'time_updated': now
     })
+
+
+def update_file(id_, data):
+    doc_ref = FDB.collection('files').document(id_)
+    doc_ref.update(data)
 
 
 def get_files(args):
