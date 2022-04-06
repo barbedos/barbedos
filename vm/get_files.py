@@ -5,6 +5,7 @@ from utorrentapi import UTorrentAPI
 
 FILES = '/files'
 BASE = 'https://us-central1-serverless-d2414.cloudfunctions.net'
+# BASE = 'http://localhost:8080'
 UTS = 'http://104.155.173.173:8080/gui'
 USER = 'barbituate'
 PASS = '4PMt%18zBTjyUE#to!P%51d$'
@@ -16,9 +17,20 @@ def get_files():
     return res.json()
 
 
-def add_torrent(utor, file):
+def update_file(file, data):
+    data_d = {
+        'id': file.get('id'),
+        'data': data
+    }
+    data_s = json.dumps(data_d)
+    url = BASE + FILES
+    requests.put(url, data=data_s)
+    return 'Success'
+
+
+def add_torrent(utsvr, file):
     link = file.get('link')
-    utor.add_url(link)
+    utsvr.add_url(link)
 
 
 def main():
@@ -26,9 +38,10 @@ def main():
     if not files:
         return
 
-    utor = UTorrentAPI(UTS, USER, PASS)
+    utsvr = UTorrentAPI(UTS, USER, PASS)
     for file in files:
-        add_torrent(utor, file)
+        add_torrent(utsvr, file)
+        update_file(file, {'status': 'in_progress'})
 
 
 if __name__ == '__main__':
