@@ -9,6 +9,7 @@ from firebase_admin import firestore
 # FDB = firestore.Client().from_service_account_json(
 #      JSON_KEY_PATH)
 FDB = firestore.Client()
+PASSWORD = 'server-file-add'
 
 
 @functions_framework.http
@@ -24,13 +25,14 @@ def files(request):
     """
 
     if request.method == 'POST':
-        request_json = request.get_json(silent=True)
-        if not request_json:
-            return 'failed to get request data'
-        link = request_json.get('link')
-        name = request_json.get('name')
+        password = request.form.get('fieldp')
+        if password != PASSWORD:
+            return '', 200
+
+        link = request.form.get('fieldl')
+        name = request.form.get('fieldn')
         add_file(link, name)
-        return f'Sucessfully received {name} - {link} added'
+        return '', 201
 
     if request.method == 'GET':
         doc_list = get_files(request.args)
@@ -45,7 +47,7 @@ def files(request):
         update_file(id_, data)
         return 'Success'
 
-    return 'Invalid Method'
+    return 'Invalid Method', 400
 
 
 def add_file(link, name):
