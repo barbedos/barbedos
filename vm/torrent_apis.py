@@ -1,4 +1,6 @@
+# pylint: disable=import-error
 from utorrentapi import UTorrentAPI, TorrentListInfo
+# pylint: enable=import-error
 
 
 UTS = 'http://104.155.173.173:8080/gui'
