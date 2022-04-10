@@ -1,8 +1,13 @@
 from datetime import datetime
+import time
 import json
 import functions_framework
 from firebase_admin import firestore
+from google.cloud import compute_v1
 
+VMPROJ = 'mythical-mason-137313'
+VMINST = 'pimpbox'
+VMZONE = 'us-central1-a'
 
 # JSON_KEY_PATH = (
 #      '/Users/barbe/Projects/barbedos/key.serverless-admin.json')
@@ -32,6 +37,7 @@ def files(request):
         link = request.form.get('fieldl')
         name = request.form.get('fieldn')
         add_file(link, name)
+        start_vm()
         return '', 201
 
     if request.method == 'GET':
@@ -64,6 +70,7 @@ def add_file(link, name):
 
 def update_file(id_, data):
     doc_ref = FDB.collection('files').document(id_)
+    data['time_updated'] = datetime.utcnow()
     doc_ref.update(data)
 
 
@@ -78,3 +85,23 @@ def get_files(args):
         doc_d['id'] = doc.id
         doc_list.append(doc_d)
     return json.dumps(doc_list, sort_keys=True, default=str)
+
+
+def start_vm():
+    op_client = compute_v1.ZoneOperationsClient()
+    inst_client = compute_v1.InstancesClient()
+    inst = inst_client.get(
+        project=VMPROJ, zone=VMZONE, instance=VMINST
+    )
+    if (inst.status == 'RUNNING'):
+        return 'VM already running'
+
+    opr = inst_client.start_unary(
+        project=VMPROJ, zone=VMZONE, instance=VMINST
+    )
+    start = time.time()
+    while opr.status != compute_v1.Operation.Status.DONE:
+        opr = op_client.wait(operation=opr.name, zone=VMZONE, project=VMPROJ)
+        if time.time() - start >= 300:  # 5 minutes
+            raise TimeoutError()
+    return 'VM Started'
