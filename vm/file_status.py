@@ -1,8 +1,4 @@
 import time
-<<<<<<< Updated upstream
-=======
-from datetime import datetime
->>>>>>> Stashed changes
 from function_apis import get_files, update_file
 from torrent_apis import get_torrents, get_torrent_by_id
 
