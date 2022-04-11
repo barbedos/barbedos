@@ -71,6 +71,8 @@ def add_file(link, name):
 def update_file(id_, data):
     doc_ref = FDB.collection('files').document(id_)
     data['time_updated'] = datetime.utcnow()
+    convert_to_date(data, 'tor_date_added')
+    convert_to_date(data, 'tor_date_completed')
     doc_ref.update(data)
 
 
@@ -105,3 +107,9 @@ def start_vm():
         if time.time() - start >= 300:  # 5 minutes
             raise TimeoutError()
     return 'VM Started'
+
+
+def convert_to_date(data, key):
+    if key not in data:
+        return
+    data[key] = datetime.fromtimestamp(data[key])
