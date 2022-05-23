@@ -2,6 +2,7 @@ from datetime import datetime
 import time
 import json
 import functions_framework
+from flask import jsonify
 from firebase_admin import firestore
 from google.cloud import compute_v1
 
@@ -30,19 +31,20 @@ def files(request):
     """
 
     if request.method == 'POST':
-        password = request.form.get('fieldp')
+        request_json = json.loads(request.data)
+        password = request_json.get('fieldp')
         if password != PASSWORD:
-            return '', 200
+            return jsonify({'message': 'Thanks!'}), 200
 
-        link = request.form.get('fieldl')
-        name = request.form.get('fieldn')
+        link = request_json.get('fieldl')
+        name = request_json.get('fieldn')
         add_file(link, name)
         start_vm()
-        return '', 201
+        return jsonify({'message': f'File {name} added'}), 201
 
     if request.method == 'GET':
         doc_list = get_files(request.args)
-        return f'{doc_list}'
+        return jsonify({doc_list})
 
     if request.method == 'PUT':
         request_json = json.loads(request.data)
@@ -51,9 +53,9 @@ def files(request):
         id_ = request_json.get('id')
         data = request_json.get('data')
         update_file(id_, data)
-        return 'Success'
+        return jsonify({'message': 'Success'}), 200
 
-    return 'Invalid Method', 400
+    return jsonify({'error': {'code': 'invalid_method'}}), 400
 
 
 def add_file(link, name):

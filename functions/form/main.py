@@ -18,37 +18,64 @@ FORM_HTML = """
     <style>
       .hide { position:absolute; top:-1px; left:-1px; width:1px; height:1px; }
     </style>
-    <iframe name="hiddenFrame" class="hide"></iframe>
     <div class="container">
-      <form id="myform" name="myform"
-        action="https://us-central1-serverless-d2414.cloudfunctions.net/files"
-        target="hiddenFrame"
-        method="post">
-
+      <form id="myform" name="myform">
         <br><br>
         <div class="form-outline mb-4">
-          <input type="text" name="fieldl" id="fieldl" class="form-control"
-                 placeholder="l"/>
+          <input type="text" name="fieldl" id="fieldl" class="form-control" placeholder="l"/>
         </div>
         <br>
 
         <div class="form-outline mb-4">
-          <input type="text" name="fieldn" id="fieldn" class="form-control"
-                 placeholder="n"/>
+          <input type="text" name="fieldn" id="fieldn" class="form-control" placeholder="n"/>
         </div>
         <br>
 
         <div class="form-outline mb-4">
-          <input type="text" name="fieldp" id="fieldp" class="form-control"
-                 placeholder="p"/>
+          <input type="text" name="fieldp" id="fieldp" class="form-control" placeholder="p"/>
         </div>
         <br>
 
         <div class="form-outline mb-4">
-          <button type="submit" class="btn btn-primary btn-block">Submit
-          </button>
+          <button class="btn btn-primary btn-block" onclick="buttonClick()"
+                  id='btn'>Submit </button>
+        </div>
+        <div class="form-outline mb-4">
+          <p style="text-align:center" id="fieldr"></p>
         </div>
       </form>
+
+      <script type="text/javascript">
+      const url = "https://us-central1-serverless-d2414.cloudfunctions.net/files";
+      const btn = document.getElementById('btn');
+      const fieldl = document.getElementById('fieldl');
+      const fieldn = document.getElementById('fieldn');
+      const fieldp = document.getElementById('fieldp');
+      const fieldr = document.getElementById('fieldr');
+      function buttonClick() {
+        btn.disable = true;
+        event.preventDefault()
+
+        let data = JSON.stringify({
+          fieldl: fieldl.value,
+          fieldn: fieldn.value,
+          fieldp: fieldp.value,
+        })
+        async function submitFields() {
+          const response = await fetch(url, {
+            method: "POST",
+            headers: {"ContentType": "application/json"},
+            body: data
+          });
+          const resp = await response.json();
+          fieldl.value = "";
+          fieldn.value = "";
+          fieldr.innerHTML = resp.message;
+        }
+        submitFields();
+        btn.disable = false;
+      }
+      </script>
     </div>
   </body>
 </html>
