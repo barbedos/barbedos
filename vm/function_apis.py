@@ -9,7 +9,7 @@ BASE = 'https://us-central1-serverless-d2414.cloudfunctions.net'
 def get_files(status):
     url = BASE + FILES + f'?status={status}'
     res = requests.get(url)
-    return res.json()
+    return json.loads(res.content)
 
 
 def update_file(file, data):
