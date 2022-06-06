@@ -14,7 +14,6 @@
     <style>
       .hide { position:absolute; top:-1px; left:-1px; width:1px; height:1px; }
     </style>
-    <iframe name="hiddenFrame" class="hide"></iframe>
     <div class="container">
       <form id="myform" name="myform">
         <br><br>
@@ -34,8 +33,7 @@
         <br>
 
         <div class="form-outline mb-4">
-          <button class="btn btn-primary btn-block" onclick="buttonClick()"
-                  id='btn'>Submit </button>
+          <button class="btn btn-primary btn-block" onclick="buttonClick()" id='btn'>Submit</button>
         </div>
         <div class="form-outline mb-4">
           <p style="text-align:center" id="fieldr"></p>
@@ -43,7 +41,7 @@
       </form>
 
       <script type="text/javascript">
-      const url = "https://us-central1-serverless-d2414.cloudfunctions.net/files-test";
+      const url = 'https://us-central1-serverless-d2414.cloudfunctions.net/files';
       const btn = document.getElementById('btn');
       const fieldl = document.getElementById('fieldl');
       const fieldn = document.getElementById('fieldn');
@@ -51,6 +49,7 @@
       const fieldr = document.getElementById('fieldr');
       function buttonClick() {
         btn.disable = true;
+        event.preventDefault()
 
         let data = JSON.stringify({
           fieldl: fieldl.value,
@@ -59,17 +58,17 @@
         })
         async function submitFields() {
           const response = await fetch(url, {
-            method: "POST",
-            headers: {"ContentType": "application/json"},
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {'Content-Type': 'application/json'},
             body: data
           });
           const resp = await response.json();
-          console.log(resp);
+          fieldl.value = '';
+          fieldn.value = '';
           fieldr.innerHTML = resp.message;
         }
         submitFields();
-        fieldl.value = "";
-        fieldn.value = "";
         btn.disable = false;
       }
       </script>

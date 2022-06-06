@@ -64,7 +64,7 @@ FORM_HTML = """
         async function submitFields() {
           const response = await fetch(url, {
             method: "POST",
-            headers: {"ContentType": "application/json"},
+            headers: {"Content-Type": "application/json"},
             body: data
           });
           const resp = await response.json();
