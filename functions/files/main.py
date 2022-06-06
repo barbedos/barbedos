@@ -44,7 +44,7 @@ def files(request):
 
     if request.method == 'GET':
         doc_list = get_files(request.args)
-        return jsonify({doc_list})
+        return f'{doc_list}'
 
     if request.method == 'PUT':
         request_json = json.loads(request.data)

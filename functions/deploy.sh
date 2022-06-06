@@ -2,6 +2,7 @@
 # Used to deploy all functions in argument list
 
 PROJECT_ID="serverless-d2414"
+EMAIL="brian.barbe@gmail.com"
 PROJECT_NAME="Serverless"
 DEPLOY_TEST=false
 DEPLOY_LOCAL=false
@@ -12,6 +13,7 @@ FILES="files"
 FORM="form"
 ALL="$FILES $FORM"
 CURPWD=$PWD
+SERVICE_ACCOUNT='serverless-admin@serverless-d2414.iam.gserviceaccount.com'
 
 trap ctrl_c INT
 
@@ -52,10 +54,10 @@ if [[ $BASH_VERSINFO -le 4 ]]; then
 fi
 
 # Set gcloud
-echo "gcloud config set account brian.barbe@gmail.com"
-gcloud config set account brian.barbe@gmail.com
-echo "gcloud config set project serverless-d2414"
-gcloud config set project serverless-d2414
+echo "gcloud config set account $EMAIL"
+gcloud config set account $EMAIL
+echo "gcloud config set project $PROJECT_ID"
+gcloud config set project $PROJECT_ID
 
 # Declare function ports
 declare -A PORTS
@@ -77,12 +79,13 @@ for func in $funcs; do
     fi
 
     if [[ "$DEPLOY_LOCAL" == "false" ]]; then
-        cmd=$(printf "%s %s %s %s %s %s %s" \
+        cmd=$(printf "%s %s %s %s %s %s %s %s" \
               "gcloud functions deploy $funcname" \
-              "--entry-point $func" \
-              "--source $func" \
-              "--region $REGION" \
-              "--runtime $RUNTIME" \
+              "--entry-point=$func" \
+              "--source=$func" \
+              "--region=$REGION" \
+              "--runtime=$RUNTIME" \
+              "--service-account=$SERVICE_ACCOUNT" \
               "--trigger-http" \
               "--allow-unauthenticated")
     else
