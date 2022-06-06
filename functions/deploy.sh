@@ -72,7 +72,7 @@ fi
 # Deploy each function
 for func in $funcs; do
     epoch_start=$(date -u '+%s')
-    printf "Deploying $func ...\n"
+    printf "\nDeploying $func ...\n"
     funcname=$func
     if [[ "$DEPLOY_TEST" == "true" ]]; then
         funcname="${funcname}-test"
@@ -85,9 +85,11 @@ for func in $funcs; do
               "--source=$func" \
               "--region=$REGION" \
               "--runtime=$RUNTIME" \
-              "--service-account=$SERVICE_ACCOUNT" \
               "--trigger-http" \
               "--allow-unauthenticated")
+              if [[ "$func" == "$FILES" ]]; then
+                  cmd="$cmd --service-account=$SERVICE_ACCOUNT"
+              fi
     else
         cmd=$(printf "%s %s %s %s" \
               "functions-framework" \
