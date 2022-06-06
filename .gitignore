@@ -2,3 +2,4 @@ __pycache__/
 .venv
 *.swp
 key.*.json
+.DS_Store
