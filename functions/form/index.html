@@ -49,6 +49,7 @@
       const fieldr = document.getElementById('fieldr');
       function buttonClick() {
         btn.disable = true;
+        btn.style.opacity = "0.3";
         event.preventDefault()
 
         let data = JSON.stringify({
@@ -70,6 +71,7 @@
         }
         submitFields();
         btn.disable = false;
+        btn.style.opacity = "1.0";
       }
       </script>
     </div>
