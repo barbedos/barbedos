@@ -25,6 +25,10 @@ def main():
         return
 
     for file in pending:
+        if not file.get('link') or 'magnet' not in file.get('link'):
+            update_file(file, {'status': 'invalid_link'})
+            continue
+
         active = get_files('in_progress')
         add_torrent(file)
         torrents = get_active_torrents()
