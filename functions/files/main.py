@@ -33,11 +33,14 @@ def files(request):
     if request.method == 'POST':
         request_json = json.loads(request.data)
         password = request_json.get('fieldp')
+        link = request_json.get('fieldl')
+        name = request_json.get('fieldn')
+        if link == 'test' or name == 'test':
+            time.sleep(5)
+            return jsonify({'message': 'Test Succeeded'}), 200
         if password != PASSWORD:
             return jsonify({'message': 'Thanks!'}), 200
 
-        link = request_json.get('fieldl')
-        name = request_json.get('fieldn')
         add_file(link, name)
         start_vm()
         return jsonify({'message': f'File {name} added'}), 201
